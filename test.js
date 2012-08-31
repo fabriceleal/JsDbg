@@ -15,7 +15,7 @@ j.listThreads(function(threads){
 	var ctx = threads[0].getContext();
 	console.log('Js: Context = ' + JSON.stringify(ctx));
 	
-	// Detach process. Otherwise it will close!
+	// Detach process. Otherwise process will terminate abnormally!
 	j.detach();
 });
 console.log('Js: end of "main thread"');

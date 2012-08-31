@@ -79,22 +79,19 @@ DWORD JsDbg::Detach(){
 }
 
 void JsDbg::StartDebugThread(){
-	printf("%x\n", this);
-	/*LPDEBUG_EVENT dbg = (LPDEBUG_EVENT)malloc(sizeof(DEBUG_EVENT));
+	/*printf("%x\n", this);
+	LPDEBUG_EVENT dbg = (LPDEBUG_EVENT)malloc(sizeof(DEBUG_EVENT));
 	printf("Start debug thead ...\n");
 	while(this->p_active){	
-		printf("Inside while\n");
+		//printf("Inside while\n");
 
 		memset(dbg, 0x0, sizeof(DEBUG_EVENT));
 
 		if(WaitForDebugEvent(dbg, INFINITE)){
 
-			printf("Handling debug event\n");
-
+			//printf("Handling debug event\n");
 			this->p_active = false;
-
-			printf("Debug Event here: %d, %d\n", dbg->dwProcessId, dbg->dwThreadId);
-			
+			//printf("Debug Event here: %d, %d\n", dbg->dwProcessId, dbg->dwThreadId);			
 			this->p_active = true;
 			ContinueDebugEvent(dbg->dwProcessId, dbg->dwThreadId, DBG_CONTINUE);
 		}

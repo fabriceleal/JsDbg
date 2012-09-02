@@ -1,82 +1,166 @@
 #ifndef __JSDEBUGEVENTS_H
 #define __JSDEBUGEVENTS_H
 
+#include <node.h>
+#include <v8.h>
+
 #include <Windows.h>
+
+#include "JsDbg.h"
+
+using namespace v8;
+using namespace node;
+
+
+struct JsDebugEventInfo {
+	char* name;
+};
 
 class JsDebugEvent {
 
+protected:
+
+	JsDebugEvent(){ }
+
 public:
 
+	virtual void FillEventInfo(JsDebugEventInfo* evInfo) = 0;
+	virtual Local<Object> GetV8Obj() = 0;
+	
 	void Dispatch(JsDbg* d);
-
-	static JsDebugEvent GetInstance(DEBUG_EVENT* dbgEvent){
-		switch(dbgEvent->dwDebugEventCode){
-		case 0x1:
-			return new JsDebugExceptionEvent(&dbgEvent->u);
-		case 0x2:
-			return new JsDebugCreateThreadEvent(&dbgEvent->u);
-		case 0x3:
-			return new JsDebugCreateProcessEvent(&dbgEvent->u);
-		case 0x4:
-			return new JsDebugExitThreadEvent(&dbgEvent->u);
-		case 0x5:
-			return new JsDebugExitProcessEvent(&dbgEvent->u);
-		case 0x6:
-			return new JsDebugLoadDllEvent(&dbgEvent->u);
-		case 0x7:
-			return new JsDebugUnloadDllEvent(&dbgEvent->u);
-		case 0x8:
-			return new JsDebugOutputStringEvent(&dbgEvent->u);
-		case 0x9:
-			return new JsDebugRipEvent(&dbgEvent->u);
-		}
-	}
-
+	
 };
 
-class JsDebugExceptionEvent : JsDebugEvent {
-public:
-	JsDebugExceptionEvent(EXCEPTION_DEBUG_INFO* info);
+#define INHERIT_FROM_JSDEBUGEVENT					\
+	void FillEventInfo(JsDebugEventInfo* evInfo);   \
+	Local<Object> GetV8Obj()
+
+class JsDebugExceptionEvent : public JsDebugEvent {
+
+protected:
+	
+	JsDebugExceptionEvent(const EXCEPTION_DEBUG_INFO* info);
+	JsDebugExceptionEvent(const EXCEPTION_RECORD* rec);
+
+public:	
+
+	static JsDebugExceptionEvent* GetInstance(const EXCEPTION_DEBUG_INFO* info);
+	static JsDebugExceptionEvent* GetInstance(const EXCEPTION_RECORD* rec);
+
+	PVOID m_Address;
+	DWORD m_Code;
+	JsDebugExceptionEvent* m_Inner;
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	static Handle<Value> GetAddress(Local<String> name, const AccessorInfo& info);
+	
 };
 
-class JsDebugCreateThreadEvent : JsDebugEvent {
+//// BEGIN JSDEBUGEXCEPTIONEVENT CHILDS
+
+class JsExceptionAccessViolationEvent : public JsDebugExceptionEvent {
 public:
-	JsDebugCreateThreadEvent(CREATE_THREAD_DEBUG_INFO* info);
+
+	JsExceptionAccessViolationEvent(const EXCEPTION_DEBUG_INFO* info) : JsDebugExceptionEvent(info) { }
+	JsExceptionAccessViolationEvent(const EXCEPTION_RECORD* rec) : JsDebugExceptionEvent(rec) { }
+
+	INHERIT_FROM_JSDEBUGEVENT;
 };
 
-class JsDebugCreateProcessEvent : JsDebugEvent {
+class JsExceptionBreakpointEvent : public JsDebugExceptionEvent {
 public:
-	JsDebugCreateProcessEvent(CREATE_PROCESS_DEBUG_INFO* info);
+
+	JsExceptionBreakpointEvent(const EXCEPTION_DEBUG_INFO* info) : JsDebugExceptionEvent(info) { }
+	JsExceptionBreakpointEvent(const EXCEPTION_RECORD* rec) : JsDebugExceptionEvent(rec) { }
+
+	INHERIT_FROM_JSDEBUGEVENT;
 };
 
-class JsDebugExitThreadEvent : JsDebugEvent {
+class JsExceptionGuardPageEvent : public JsDebugExceptionEvent {
 public:
-	JsDebugExitThreadEvent(EXIT_THREAD_DEBUG_INFO* info);
-}
 
-class JsDebugExitProcessEvent : JsDebugEvent {
-public:
-	JsDebugExitProcessEvent(EXIT_PROCESS_DEBUG_INFO* info);
+	JsExceptionGuardPageEvent(const EXCEPTION_DEBUG_INFO* info) : JsDebugExceptionEvent(info) { }
+	JsExceptionGuardPageEvent(const EXCEPTION_RECORD* rec) : JsDebugExceptionEvent(rec) { }
+
+	INHERIT_FROM_JSDEBUGEVENT;
 };
 
-class JsDebugLoadDllEvent : JsDebugEvent {
+class JsExceptionSingleStepEvent : public JsDebugExceptionEvent {
 public:
-	JsDebugLoadDllEvent(LOAD_DLL_DEBUG_INFO* info);
+
+	JsExceptionSingleStepEvent(const EXCEPTION_DEBUG_INFO* info) : JsDebugExceptionEvent(info) { }
+	JsExceptionSingleStepEvent(const EXCEPTION_RECORD* rec) : JsDebugExceptionEvent(rec) { }
+
+	INHERIT_FROM_JSDEBUGEVENT;
 };
 
-class JsDebugUnloadDllEvent : JsDebugEvent {
+//// END JSDEBUGEXCEPTIONEVENT CHILDS
+
+class JsDebugCreateThreadEvent : public JsDebugEvent {
 public:
-	JsDebugUnloadDllEvent(UNLOAD_DLL_DEBUG_INFO* info);
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugCreateThreadEvent(const CREATE_THREAD_DEBUG_INFO* info);
 };
 
-class JsDebugOutputStringEvent : JsDebugEvent {
+class JsDebugCreateProcessEvent : public JsDebugEvent {
 public:
-	JsDebugOutputStringEvent(OUTPUT_DEBUG_STRING_INFO* info);
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugCreateProcessEvent(const CREATE_PROCESS_DEBUG_INFO* info);
 };
 
-class JsDebugRipEvent : JsDebugEvent {
+class JsDebugExitThreadEvent : public JsDebugEvent {
 public:
-	JsDebugRipEvent(RIP_INFO* info);
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugExitThreadEvent(const EXIT_THREAD_DEBUG_INFO* info);
 };
+
+class JsDebugExitProcessEvent : public JsDebugEvent {
+public:
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugExitProcessEvent(const EXIT_PROCESS_DEBUG_INFO* info);
+};
+
+class JsDebugLoadDllEvent : public JsDebugEvent {
+public:
+	
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugLoadDllEvent(const LOAD_DLL_DEBUG_INFO* info);
+};
+
+class JsDebugUnloadDllEvent : public JsDebugEvent {
+public:
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugUnloadDllEvent(const UNLOAD_DLL_DEBUG_INFO* info);
+};
+
+class JsDebugOutputStringEvent : public JsDebugEvent {
+public:
+
+	INHERIT_FROM_JSDEBUGEVENT;
+	
+	JsDebugOutputStringEvent(const OUTPUT_DEBUG_STRING_INFO* info);
+};
+
+class JsDebugRipEvent : public JsDebugEvent {
+public:
+
+	INHERIT_FROM_JSDEBUGEVENT;
+
+	JsDebugRipEvent(const RIP_INFO* info);
+};
+
+JsDebugEvent* GetInstance(const DEBUG_EVENT* dbgEvent);
 
 #endif

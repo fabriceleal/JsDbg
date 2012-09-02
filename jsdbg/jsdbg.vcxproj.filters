@@ -16,14 +16,14 @@
     <Filter Include="Source Files\JsDebugEvents">
       <UniqueIdentifier>{30bedbaa-38bd-4c49-9b9a-7e5809b9203f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Hashtable">
+      <UniqueIdentifier>{00c176c5-8edd-41d0-a55b-d1c662117541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\JsDbg">
+      <UniqueIdentifier>{a95bb97b-ca22-4758-a636-086022d512f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JsDbg.Native.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JsDbg.Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="JsThread.Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,6 +36,33 @@
     <ClCompile Include="JsThreadContext.Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JsDebugEvent.Node.cpp">
+      <Filter>Source Files\JsDebugEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDebugEvent.Native.cpp">
+      <Filter>Source Files\JsDebugEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDebugEvents.Classes.cpp">
+      <Filter>Source Files\JsDebugEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Node.ListThreads.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Native.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Native.DebugEvents.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Native.Init.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Node.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Native.Snaps.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDbg.h">
@@ -47,5 +74,14 @@
     <ClInclude Include="JsDebugEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hashtable.h">
+      <Filter>Header Files\Hashtable</Filter>
+    </ClInclude>
+    <ClInclude Include="HashItem.h">
+      <Filter>Header Files\Hashtable</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

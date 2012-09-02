@@ -131,7 +131,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JsDbg.Native.cpp" />
+    <ClCompile Include="JsDbg.Native.DebugEvents.cpp" />
+    <ClCompile Include="JsDbg.Native.Init.cpp" />
+    <ClCompile Include="JsDbg.Native.Snaps.cpp" />
     <ClCompile Include="JsDbg.Node.cpp" />
+    <ClCompile Include="JsDbg.Node.ListThreads.cpp" />
+    <ClCompile Include="JsDebugEvent.Native.cpp" />
+    <ClCompile Include="JsDebugEvents.Classes.cpp" />
+    <ClCompile Include="JsDebugEvent.Node.cpp" />
     <ClCompile Include="JsThread.Native.cpp" />
     <ClCompile Include="JsThread.Node.cpp" />
     <ClCompile Include="JsThreadContext.h" />
@@ -145,9 +152,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HashItem.h" />
+    <ClInclude Include="Hashtable.h" />
     <ClInclude Include="JsDbg.h" />
     <ClInclude Include="JsDebugEvents.h" />
     <ClInclude Include="JsThread.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

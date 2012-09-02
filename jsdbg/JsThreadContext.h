@@ -52,7 +52,7 @@ public:
 	JsThreadContext(LPCONTEXT threadCtx){ 
 		
 
-#define COPY_FIELD(FIELD)								\
+#define COPY_FIELD(FIELD)							\
 	printf("C++: %s should be %d\n", #FIELD, threadCtx-> ## FIELD ##); \
 	this->p_ ## FIELD ## = threadCtx-> ## FIELD
 
@@ -84,6 +84,8 @@ public:
 		COPY_FIELD(Esp);
 		COPY_FIELD(SegSs);
 	}
+
+#undef COPY_FIELD
 
 	static Local<Object> GetV8Obj(JsThreadContext* t);
 	
@@ -123,6 +125,6 @@ public:
 
 } ;
 
-
+#undef DEFINE_NODE_ACCESSORS
 
 #endif

@@ -5,7 +5,7 @@
 #include <string>
 //#include <gcroot.h>
 //#include <iostream>
-#include <uv.h>
+//#include <uv.h>
 
 #include "JsDbg.h"
 #include "JsThread.h"
@@ -29,6 +29,9 @@ void NODE_EXTERN JsDbg::Init(Handle<Object> target){
 	NODE_SET_PROTOTYPE_METHOD(s_ct, "attach", attach);
 	NODE_SET_PROTOTYPE_METHOD(s_ct, "detach", detach);
 	NODE_SET_PROTOTYPE_METHOD(s_ct, "listThreads", listThreads);
+	NODE_SET_PROTOTYPE_METHOD(s_ct, "run", run);
+	NODE_SET_PROTOTYPE_METHOD(s_ct, "funcResolve", funcResolve);
+	NODE_SET_PROTOTYPE_METHOD(s_ct, "setBp", setBp);
 
 	// Register classes in module
 	target->Set(String::NewSymbol("JsDbg"), s_ct->GetFunction());
@@ -36,16 +39,28 @@ void NODE_EXTERN JsDbg::Init(Handle<Object> target){
 
 Handle<Value> JsDbg::New(const Arguments& args){
 	HandleScope scope;
-				
+	printf("C++: JsDbg.new: %x\n", args.This());
+
 	// Create object
 	JsDbg* o = new JsDbg();
-
-	// Wrap and return
+		
 	o->Wrap(args.This());
+	o->Ref();
+	//o->m_jsObj = args.This();	
+
+	printf("C++: Handle: %x\n", o->handle_);
+
+	printf("C++: JsDbg.new: %x\n", args.This());
+
 	return args.This();
 }
 
 Handle<Value> JsDbg::load(const Arguments& args){
+	HandleScope scope;
+	printf("C++: JsDbg.load: %x\n", args.This());
+
+	// TODO Make this async
+
 	// Unwrap instance
 	JsDbg* xthis = ObjectWrap::Unwrap<JsDbg>(args.This());
 	
@@ -58,11 +73,25 @@ Handle<Value> JsDbg::load(const Arguments& args){
 		// Some error!
 		printf("ERR: %d\n", res);
 	} 
-		
+
+	// Raise event, a little pointless I guess...
+
+	Handle<Value> argv[1] = 
+	{
+		String::New("Loaded", 6)		
+	};
+	
+	printf("C++, load: Raising callback!\n");
+	MakeCallback(xthis->handle_, "emit", 1, argv);
+
 	return Undefined();
 }
 
 Handle<Value> JsDbg::attach(const Arguments& args){
+	//HandleScope scope;
+
+	printf("C++ JsDbg.attach: %x\n", args.This());
+
 	// Unwrap instance
 	JsDbg* xthis = ObjectWrap::Unwrap<JsDbg>(args.This());
 
@@ -87,6 +116,10 @@ Handle<Value> JsDbg::attach(const Arguments& args){
 }
 
 Handle<Value> JsDbg::detach(const Arguments& args){
+	//HandleScope scope;
+
+	printf("C++ JsDbg.detach: %x\n", args.This());
+
 	// Unwrap instance
 	JsDbg* xthis = ObjectWrap::Unwrap<JsDbg>(args.This());
 
@@ -98,68 +131,43 @@ Handle<Value> JsDbg::detach(const Arguments& args){
 	return Undefined();
 }
 
-// list threads
+Handle<Value> JsDbg::run(const Arguments& args){
+	//HandleScope scope;
 
-struct ListThreadsData {
-	uv_work_t request;
-	Persistent<Function> callback;
-	bool error;
-	std::string error_message;
+	printf("C++ JsDbg.run: %x\n", args.This());
+
+	// Unwrap instance
+	JsDbg* xthis = ObjectWrap::Unwrap<JsDbg>(args.This());
+
+	xthis->StartDebugThread();
 	
-	JsDbg* _this;
-
-	int res_len;
-	JsThread** res_arr;
-};
-
-static void listThreadsAsyncWork(uv_work_t* req){
-	ListThreadsData* data = static_cast<ListThreadsData*>(req->data);
-
-	data->_this->ListThreads(&data->res_arr, &data->res_len);
+	return Undefined();
 }
 
-static void listThreadsAsyncAfter(uv_work_t* req){
-	HandleScope hnd;
-	ListThreadsData* data = static_cast<ListThreadsData*>(req->data);
+Handle<Value> JsDbg::funcResolve(const Arguments& args){
+	//HandleScope scope;
 
-	if(data->error){
-		// TODO: ...
-	} else {
-		Local<Array> a = Array::New(data->res_len);
-		for(int i = 0; i < data->res_len; ++i){
-			a->Set(i, JsThread::GetV8Obj(data->res_arr[i]));		
-		}
+	printf("C++ JsDbg.funcResolve: %x\n", args.This());
 
-		Local<Value> argv[1] = {
-			//Local<Value>::New(Null()), No... No ...
-			a
-		};
-
-		TryCatch try_catch;
-		data->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-		if(try_catch.HasCaught()){
-			FatalException(try_catch);
-		}
-	}
-	// Do not free the data->res_*
-	delete data;
+	// Unwrap instance
+	JsDbg* xThis = ObjectWrap::Unwrap<JsDbg>(args.This());
+	String::AsciiValue s1(args[0]);
+	String::AsciiValue s2(args[1]);
+	
+	return Integer::New(xThis->FuncResolve(*s1, *s2));
 }
 
-Handle<Value> JsDbg::listThreads(const Arguments& args){
-	// Get callback function
-	Local<Function> cb = Local<Function>::Cast(args[0]);
+Handle<Value> JsDbg::setBp(const Arguments& args){
+	//HandleScope scope;
 
-	ListThreadsData* data = new ListThreadsData();
-	data->error = false;
-	data->request.data = data;
-	data->callback = Persistent<Function>::New(cb);
-	data->res_len = 0;
-	data->res_arr = NULL;
-	data->_this = ObjectWrap::Unwrap<JsDbg>(args.This());
+	printf("C++ JsDbg.run: %x\n", args.This());
 
-	int status = uv_queue_work(uv_default_loop(), &data->request, listThreadsAsyncWork, listThreadsAsyncAfter);
-	assert(status == 0);
+	// Unwrap instance
+	JsDbg* xThis = ObjectWrap::Unwrap<JsDbg>(args.This());
+	long address = args[0]->ToInteger()->IntegerValue();
 
+	xThis->SetBp(address);
+	
 	return Undefined();
 }
 

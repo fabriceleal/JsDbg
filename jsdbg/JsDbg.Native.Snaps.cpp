@@ -8,7 +8,46 @@
 
 #include <TlHelp32.h>
 
+#include "Util.h"
+#include <tchar.h>
+
 // List threads, modules, ...
+
+long JsDbg::FuncResolve(char* dll, char* function){
+	// FIXME Of course this cant be like this!
+
+	printf("C++: FuncResolve(%s, %s)\n", dll, function);
+
+	long address = 0;
+
+	HANDLE snap = CreateToolhelp32Snapshot((DWORD)TH32CS_SNAPMODULE, (DWORD)(this->p_pid));
+	PMODULEENTRY32 entry = (PMODULEENTRY32) malloczeroes(sizeof(MODULEENTRY32));
+	entry->dwSize = sizeof(MODULEENTRY32);
+
+	bool has = Module32First(snap, entry);
+	if(has){
+		assert(sizeof(char) != sizeof(TCHAR));
+
+		int t_size = sizeof(TCHAR) * strlen(dll) + 2;
+		TCHAR* t_dll = (TCHAR*)malloczeroes(t_size);
+
+		::MultiByteToWideChar(CP_ACP, 0, dll, -1, t_dll, t_size);
+	
+		while(has){
+			printf("C++: * %ls\n", entry->szModule);
+			if(_tcscmp(t_dll, entry->szModule)){
+				printf("C++: Found %ls!!!\n", entry->szModule);
+				has = false;
+			} else {
+				has = Module32Next(snap, entry);
+			}
+		}
+	}
+	free(entry);
+	CloseHandle(snap);
+
+	return address;
+}
 
 void JsDbg::ListThreads(JsThread *** ptr_array, int* length){	
 	std::list<JsThread*> ls;
@@ -63,12 +102,3 @@ void JsDbg::ListThreads(JsThread *** ptr_array, int* length){
 		printf("C++, ListThreads: end convert to array\n");
 	}	
 }
-/*
-class ModuleIterator {
-public:
-
-	ModuleIterator(DWORD pid);
-
-	iterator begin();
-	iterator end();
-}*/

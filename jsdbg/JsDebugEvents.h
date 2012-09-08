@@ -6,6 +6,7 @@
 
 #include <Windows.h>
 
+#include "JsSystemDll.h"
 #include "JsDbg.h"
 
 using namespace v8;
@@ -26,14 +27,14 @@ public:
 
 	virtual void FillEventInfo(JsDebugEventInfo* evInfo) = 0;
 	virtual Local<Object> GetV8Obj() = 0;
-	
-	void Dispatch(JsDbg* d);
+	virtual void Dispatch(JsDbg* d);
 	
 };
 
 #define INHERIT_FROM_JSDEBUGEVENT					\
 	void FillEventInfo(JsDebugEventInfo* evInfo);   \
-	Local<Object> GetV8Obj()
+	Local<Object> GetV8Obj();						\
+	void Dispatch(JsDbg* d)
 
 class JsDebugExceptionEvent : public JsDebugEvent {
 
@@ -131,14 +132,18 @@ public:
 
 class JsDebugLoadDllEvent : public JsDebugEvent {
 public:
-	
+	JsSystemDll* m_SystemDll;
+
 	INHERIT_FROM_JSDEBUGEVENT;
 
 	JsDebugLoadDllEvent(const LOAD_DLL_DEBUG_INFO* info);
+
+	static Handle<Value> GetSystemDll(Local<String> name, const AccessorInfo& info);
 };
 
 class JsDebugUnloadDllEvent : public JsDebugEvent {
 public:
+	void* m_Base;
 
 	INHERIT_FROM_JSDEBUGEVENT;
 

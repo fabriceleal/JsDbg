@@ -6,8 +6,12 @@
 #include <v8.h>
 #include <Windows.h>
 
+#include <list>
+
 #include "Hashtable.h"
 #include "JsThread.h"
+#include "JsSystemDll.h"
+#include "JsBuffer.h"
 
 using namespace node;
 using namespace v8;
@@ -19,8 +23,10 @@ class JsDbg : public /* So handle_ is visible for the world */ ObjectWrap
 	HANDLE p_hnd;
 	DWORD p_pid;
 	Hashtable<long>* p_breakpoints;
-
+	
 public:
+	list<JsSystemDll*>* m_systemdlls;
+
 	bool m_active;
 
 	// We need this to raise events from C++...
@@ -37,6 +43,8 @@ public:
 		this->p_pid = NULL;
 		this->m_active = false;
 		this->p_breakpoints = new Hashtable<long>(1027);
+
+		this->m_systemdlls = new list<JsSystemDll*>();
 
 		//this->Init();
 	}
@@ -60,6 +68,7 @@ public:
 	DWORD Detach();
 	void ListThreads(JsThread *** ptr_array, int* length);
 	long FuncResolve(char* dll, char* function);
+	JsBuffer* BufReadProcessMemory(BYTE* address, SIZE_T length);
 
 	void StartDebugThread();
 	void SetBp(long address);

@@ -17,7 +17,7 @@ void JsDebugEvent::Dispatch(JsDbg* dbg){
 	// Call the emit method of JsDbg. It will inherit from EventEmitter
 	HandleScope hd;
 	JsDebugEventInfo* info = (JsDebugEventInfo*)malloc(sizeof(JsDebugEventInfo));
-
+	
 	this->FillEventInfo(info);
 	
 	Handle<Value> argv[2] = 

@@ -4,17 +4,7 @@
 //#include <Windows.h>
 
 #include "JsDbg.h"
-
-
-// TODO: put this in public file
-void* malloczeroes(int size){
-	printf("allocing %d\n", size);
-
-	void* ret = malloc(size);
-	memset(ret, 0x0, size);
-	return ret;
-}
-
+#include "Util.h"
 
 DWORD JsDbg::Load (const char* path_to_exe){
 	this->Init();
@@ -85,29 +75,6 @@ DWORD JsDbg::Detach(){
 	return GetLastError();
 }
 
-
-long JsDbg::FuncResolve(char* dll, char* function){
-	// FIXME Of course this cant be like this!
-
-	printf("C++: FuncResolve(%s, %s)\n", dll, function);
-
-	HMODULE hnd = GetModuleHandleA(dll);
-	if(NULL == hnd){
-		printf("C++: Err on GetModuleA, %d\n", GetLastError());
-		return NULL;
-	}
-
-	long address = (long)GetProcAddress(hnd, function);
-	printf("Sizeof Farproc: %d, sizeof long: %d\n", sizeof(FARPROC), sizeof(long));
-	if(NULL == address){
-		printf("C++: Err on FuncResolve, %d\n", GetLastError());
-		return NULL;
-	}
-
-	printf("C++: Result: %d\n", address);
-	
-	return address;
-}
 
 void JsDbg::SetBp(long address){
 	printf("C++: SetBp (%d)\n", address);

@@ -1,5 +1,7 @@
 
 #include "JsDebugEvents.h"
+#include "JsSystemDll.h"
+#include "UtilV8.h"
 
 // printf("C++: (%d) %s\n", strlen( #UNQUOTED_NAME ), #UNQUOTED_NAME);		
 
@@ -29,36 +31,7 @@ IMPLEMENT_FILLEVENTINFO(JsDebugRipEvent, Rip)
 
 #undef IMPLEMENT_FILLEVENTINFO
 
-#define IMPLEMENT_GETV8OBJ(CLASS, INIT_CODE)						\
-	Local<Object> CLASS ##::GetV8Obj() { 							\
-		Handle<FunctionTemplate> temp = FunctionTemplate::New();	\
-		temp->SetClassName(String::New(#CLASS));					\
-																	\
-		Handle<ObjectTemplate> inst = temp->InstanceTemplate();		\
-		inst->SetInternalFieldCount(1);								\
-																	\
-		INIT_CODE													\
-																	\
-		Handle<Function> ctor = temp->GetFunction();				\
-		Local<Object> o = ctor->NewInstance();						\
-		o->SetInternalField(0, External::New(this));				\
-																	\
-		return o;													\
-	}
-
-#define SET_ACCESSOR(FIELD)		\
-	inst->SetAccessor(String::New( #FIELD ), Get ## FIELD ##)
-
-#define DEFINE_ACESSORS_INTEGER(FIELD, SOURCE_INST_TYPE, TARGET_TYPE)													\
-	Handle<Value> SOURCE_INST_TYPE ## ::Get ## FIELD ## (Local<String> name, const AccessorInfo& info){	\
-		Local<Object> self = info.Holder();											\
-		Local<Value> v = self->GetInternalField(0);									\
-		Local<External> e = Local<External>::Cast(v);								\
-		SOURCE_INST_TYPE ## * t = reinterpret_cast< ## SOURCE_INST_TYPE ## *>(e->Value());		\
-		return TARGET_TYPE ## ::New((int32_t) t->m_ ## FIELD ##);										\
-	}	
-
-DEFINE_ACESSORS_INTEGER(Address, JsDebugExceptionEvent, Integer)
+DEFINE_ACCESSOR(Address, JsDebugExceptionEvent, int32_t, Integer)
 
 // Generic...
 IMPLEMENT_GETV8OBJ(JsDebugExceptionEvent, {
@@ -83,7 +56,12 @@ IMPLEMENT_GETV8OBJ(JsDebugCreateThreadEvent, {})
 IMPLEMENT_GETV8OBJ(JsDebugCreateProcessEvent, {})
 IMPLEMENT_GETV8OBJ(JsDebugExitThreadEvent, {})
 IMPLEMENT_GETV8OBJ(JsDebugExitProcessEvent, {})
-IMPLEMENT_GETV8OBJ(JsDebugLoadDllEvent, {})
+
+DEFINE_ACCESSOR_V8OBJ(SystemDll, JsDebugLoadDllEvent)
+
+IMPLEMENT_GETV8OBJ(JsDebugLoadDllEvent, {
+	SET_ACCESSOR(SystemDll);
+})
 IMPLEMENT_GETV8OBJ(JsDebugUnloadDllEvent, {})
 IMPLEMENT_GETV8OBJ(JsDebugOutputStringEvent, {})
 IMPLEMENT_GETV8OBJ(JsDebugRipEvent, {})
@@ -93,7 +71,7 @@ IMPLEMENT_GETV8OBJ(JsDebugRipEvent, {})
 #define DECLARE_CONSTR(CLASS, STRUCT)		CLASS ## :: ## CLASS ## (const STRUCT ## * dbgInfo)
 
 DECLARE_CONSTR(JsDebugExceptionEvent, EXCEPTION_DEBUG_INFO)  : m_Address (dbgInfo->ExceptionRecord.ExceptionAddress), m_Code (dbgInfo->ExceptionRecord.ExceptionCode) {
-	printf("C++: Address should be: %d\n", m_Address);
+	//printf("C++: Address should be: %d\n", m_Address);
 	if(NULL != dbgInfo->ExceptionRecord.ExceptionRecord){
 		m_Inner = JsDebugExceptionEvent::GetInstance((const EXCEPTION_RECORD*) &dbgInfo->ExceptionRecord.ExceptionRecord);
 	} else {
@@ -102,7 +80,7 @@ DECLARE_CONSTR(JsDebugExceptionEvent, EXCEPTION_DEBUG_INFO)  : m_Address (dbgInf
 }
 
 DECLARE_CONSTR(JsDebugExceptionEvent, EXCEPTION_RECORD) : m_Address (dbgInfo->ExceptionAddress), m_Code (dbgInfo->ExceptionCode){ 
-	printf("C++: Address should be: %d\n", m_Address);
+	//printf("C++: Address should be: %d\n", m_Address);
 	if(NULL != dbgInfo->ExceptionRecord){
 		m_Inner = JsDebugExceptionEvent::GetInstance((const EXCEPTION_RECORD*) &dbgInfo->ExceptionRecord);
 	} else {
@@ -127,7 +105,7 @@ DECLARE_CONSTR(JsDebugExitProcessEvent, EXIT_PROCESS_DEBUG_INFO){
 }
 
 DECLARE_CONSTR(JsDebugLoadDllEvent, LOAD_DLL_DEBUG_INFO){ 
-	printf("C++: HANDLE: %d\n", dbgInfo->hFile);
+	/*printf("C++: HANDLE: %d\n", dbgInfo->hFile);
 	void** imgName = (void**)dbgInfo->lpImageName;
 	if(NULL != imgName && 
 			NULL != *imgName)
@@ -138,12 +116,13 @@ DECLARE_CONSTR(JsDebugLoadDllEvent, LOAD_DLL_DEBUG_INFO){
 			printf("C++: NAME: %ls\n", *imgName);
 		}
 	}
-
-	CloseHandle(dbgInfo->hFile);
+	*/
+	m_SystemDll = new JsSystemDll(dbgInfo->hFile, dbgInfo->lpBaseOfDll);	
 }
 
 DECLARE_CONSTR(JsDebugUnloadDllEvent, UNLOAD_DLL_DEBUG_INFO){ 
-
+	// This is the only field in dbgInfo :(
+	m_Base = dbgInfo->lpBaseOfDll;
 }
 
 DECLARE_CONSTR(JsDebugOutputStringEvent, OUTPUT_DEBUG_STRING_INFO){ 

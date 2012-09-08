@@ -23,20 +23,24 @@ j.on('Loaded', function(){
 		// Detach process. Otherwise process will terminate abnormally!
 		//j.detach();
 	});
-
-	var add = j.funcResolve("msvcrt.dll", "printf");
-	console.log("Address of printf is " + add);
-	j.setBp(add);
 });
 
 j.on('ExitProcess', function(){
 	console.log('Js: Ended!');
 	
 })
-j.on('LoadDll', function(){
+j.on('LoadDll', function(d){
 	console.log('Js: LoadDLL !!!');
-	
+	//var add = j.funcResolve("msvcrt.dll", "printf");
+	//console.log("Address of printf is " + add);
+	console.log(JSON.stringify(d));
 });
+j.on('UnloadDll', function(d){
+	console.log('Js: UnloadDLL !!!');
+	//var add = j.funcResolve("msvcrt.dll", "printf");
+	//console.log("Address of printf is " + add);
+});
+
 j.on('Exception', function(o){
 	console.log('Js: Unknown Exception!!!');
 	
@@ -56,8 +60,8 @@ j.on('GuardPage', function(o){
 	console.log('Js: GuardPage...');
 });
 
-//j.load("C:\\Windows\\system32\\calc.exe");
-j.load("L:\\testefx\\testconsole\\Debug\\testconsole.exe");
+j.load("C:\\Windows\\system32\\calc.exe");
+//j.load("L:\\testefx\\testconsole\\Debug\\testconsole.exe");
 
 j.run();
 

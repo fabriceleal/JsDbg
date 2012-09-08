@@ -133,16 +133,23 @@
     <ClCompile Include="JsDbg.Native.cpp" />
     <ClCompile Include="JsDbg.Native.DebugEvents.cpp" />
     <ClCompile Include="JsDbg.Native.Init.cpp" />
+    <ClCompile Include="JsDbg.Native.Mem.cpp" />
     <ClCompile Include="JsDbg.Native.Snaps.cpp" />
     <ClCompile Include="JsDbg.Node.cpp" />
     <ClCompile Include="JsDbg.Node.ListThreads.cpp" />
     <ClCompile Include="JsDebugEvent.Native.cpp" />
     <ClCompile Include="JsDebugEvents.Classes.cpp" />
     <ClCompile Include="JsDebugEvent.Node.cpp" />
+    <ClCompile Include="JsDebugEvents.Dispatch.cpp" />
+    <ClCompile Include="JsSystemDll.Native.cpp" />
+    <ClCompile Include="JsSystemDll.h" />
+    <ClCompile Include="JsSystemDll.Node.cpp" />
     <ClCompile Include="JsThread.Native.cpp" />
     <ClCompile Include="JsThread.Node.cpp" />
     <ClCompile Include="JsThreadContext.h" />
     <ClCompile Include="JsThreadContext.Node.cpp" />
+    <ClCompile Include="Util.cpp" />
+    <ClCompile Include="WinUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -154,9 +161,13 @@
   <ItemGroup>
     <ClInclude Include="HashItem.h" />
     <ClInclude Include="Hashtable.h" />
+    <ClInclude Include="JsBuffer.h" />
     <ClInclude Include="JsDbg.h" />
     <ClInclude Include="JsDebugEvents.h" />
     <ClInclude Include="JsThread.h" />
+    <ClInclude Include="Util.h" />
+    <ClInclude Include="UtilV8.h" />
+    <ClInclude Include="WinUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

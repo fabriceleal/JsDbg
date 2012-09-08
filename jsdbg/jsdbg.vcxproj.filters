@@ -63,6 +63,27 @@
     <ClCompile Include="JsDbg.Native.Snaps.cpp">
       <Filter>Source Files\JsDbg</Filter>
     </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsSystemDll.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDebugEvents.Dispatch.cpp">
+      <Filter>Source Files\JsDebugEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="JsSystemDll.Native.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsSystemDll.Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsDbg.Native.Mem.cpp">
+      <Filter>Source Files\JsDbg</Filter>
+    </ClCompile>
+    <ClCompile Include="WinUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDbg.h">
@@ -79,6 +100,18 @@
     </ClInclude>
     <ClInclude Include="HashItem.h">
       <Filter>Header Files\Hashtable</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UtilV8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinUtil.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

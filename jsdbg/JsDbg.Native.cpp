@@ -3,11 +3,21 @@
 
 //#include <Windows.h>
 
+#include <PeLib.h>
+
 #include "JsDbg.h"
 #include "Util.h"
 
 DWORD JsDbg::Load (const char* path_to_exe){
 	this->Init();
+
+	PeLib::PeFile* f = PeLib::openPeFile(path_to_exe);
+	if(f) {
+		printf("C++: SUCCESS reading pe file...\n");
+		delete f;
+	} else {
+		printf("C++: Error reading pe file...\n");
+	}
 
 	printf("%x\n", this);
 	this->p_start = (LPSTARTUPINFOA)malloczeroes(sizeof(STARTUPINFOA));

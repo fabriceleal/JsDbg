@@ -68,8 +68,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.node</TargetExt>
-    <IncludePath>C:\Program Files\nodejs\node-v0.8.8\src;C:\Program Files\nodejs\node-v0.8.8\deps\uv\include;C:\Program Files\nodejs\node-v0.8.8\deps\v8\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\nodejs\node-v0.8.8\Release\lib;C:\Program Files\nodejs\node-v0.8.8\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>L:\TesteFx\jsdbg\pelib;C:\Program Files\nodejs\node-v0.8.8\src;C:\Program Files\nodejs\node-v0.8.8\deps\uv\include;C:\Program Files\nodejs\node-v0.8.8\deps\v8\include;$(IncludePath)</IncludePath>
+    <LibraryPath>L:\TesteFx\jsdbg\pelib\Debug;C:\Program Files\nodejs\node-v0.8.8\Release\lib;C:\Program Files\nodejs\node-v0.8.8\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -171,6 +171,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pelib\pelib.vcxproj">
+      <Project>{3ac095c1-d5b3-4c77-8b1b-de338ec27e82}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

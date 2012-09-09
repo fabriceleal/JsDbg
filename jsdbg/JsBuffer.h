@@ -1,3 +1,6 @@
+#ifndef __JSBUFFER_H
+#define __JSBUFFER_H
+
 #include <Windows.h>
 
 class JsBuffer {
@@ -28,3 +31,5 @@ public:
 		}
 	}
 };
+
+#endif

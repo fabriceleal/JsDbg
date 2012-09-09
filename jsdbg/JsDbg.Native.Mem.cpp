@@ -9,8 +9,10 @@ JsBuffer* JsDbg::BufReadProcessMemory(BYTE* address, SIZE_T length)
 	try 
 	{
 		UnprotectMemory uc(p_hnd, address, length, PAGE_EXECUTE_READWRITE);
-
+		
 		buffer = (BYTE*) malloc(sizeof(BYTE) * length);
+		assert(buffer != NULL);
+		printf("C++: memory alloc'ed\n");
 
 		{
 			SIZE_T current_length = length, count = 0;		
@@ -28,16 +30,19 @@ JsBuffer* JsDbg::BufReadProcessMemory(BYTE* address, SIZE_T length)
 				address += count;
 			}
 		}
+				
+	} catch (char* s) {
+		printf("C++: Caught exception %s!\n", s);
 
-	} catch (std::string s) {
 		if(buffer != NULL)
 		{
 			free(buffer);	
 		}
 	}
 
-	assert(buffer != NULL);
-	assert(length > 0);
-
-	return new JsBuffer(buffer, length);
+	if(buffer != NULL && length > 0) {
+		return new JsBuffer(buffer, length);
+	} else {
+		return NULL;
+	}
 }

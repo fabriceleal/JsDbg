@@ -164,7 +164,9 @@
     <ClInclude Include="JsBuffer.h" />
     <ClInclude Include="JsDbg.h" />
     <ClInclude Include="JsDebugEvents.h" />
+    <ClInclude Include="JsException.h" />
     <ClInclude Include="JsThread.h" />
+    <ClInclude Include="MemoryInputBuffer.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="UtilV8.h" />
     <ClInclude Include="WinUtil.h" />

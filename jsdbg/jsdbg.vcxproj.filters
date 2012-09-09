@@ -22,6 +22,9 @@
     <Filter Include="Source Files\JsDbg">
       <UniqueIdentifier>{a95bb97b-ca22-4758-a636-086022d512f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PeLib">
+      <UniqueIdentifier>{4702c75f-decf-4805-b240-6b4203acaeab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="JsThread.Node.cpp">
@@ -111,6 +114,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WinUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryInputBuffer.h">
+      <Filter>Header Files\PeLib</Filter>
+    </ClInclude>
+    <ClInclude Include="JsException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
